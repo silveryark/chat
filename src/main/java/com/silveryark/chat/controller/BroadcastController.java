@@ -7,6 +7,7 @@ import com.silveryark.rpc.gateway.OutboundMessage;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +30,9 @@ public class BroadcastController {
     }
 
     @PostMapping("/messages")
+    @PreAuthorize("hasRole('USER')")
     public Mono<GenericResponse> broadcast(Authentication user, @RequestBody GenericRequest request){
-        OutboundMessage<Map<String, Object>> outboundMessage = new OutboundMessage<>("chat",
+        OutboundMessage<Map<String, Object>> outboundMessage = new OutboundMessage<>("chat", null,
                 new JSONObject()
                     .put("user", user.getPrincipal())
                     .put("content", request.getPayload())
